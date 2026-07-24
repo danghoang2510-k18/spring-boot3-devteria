@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
 
 //    RuntimeException là gì, tìm hiểu các kiểu exception
 //    Tìm hiểu các dạng của ResponEntity
-    @ExceptionHandler(value = Exception.class)
+    @ExceptionHandler(value = RuntimeException.class)
     ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception)
     {
         ApiResponse apiResponse = new ApiResponse();

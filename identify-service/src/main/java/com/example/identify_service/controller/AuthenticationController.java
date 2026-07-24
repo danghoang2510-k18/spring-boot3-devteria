@@ -3,8 +3,11 @@ package com.example.identify_service.controller;
 
 import com.example.identify_service.dto.request.ApiResponse;
 import com.example.identify_service.dto.request.AuthenticationRequest;
+import com.example.identify_service.dto.request.IntrospectRequest;
 import com.example.identify_service.dto.response.AuthenticationResponse;
+import com.example.identify_service.dto.response.IntrospectResponse;
 import com.example.identify_service.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
 
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.text.ParseException;
 
 //Phục vụ việc xác minh
 @RestController
@@ -23,12 +28,21 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
 
 //    Xem lại --> lú
-    @PostMapping("/log-in")
+    @PostMapping("/token")
     ApiResponse<AuthenticationResponse> handleLogin(@RequestBody  AuthenticationRequest request)
     {
-        boolean result =  authenticationService.authenticate(request);
+        var result =  authenticationService.authenticate(request);
         return ApiResponse.<AuthenticationResponse>builder()
-                .result(AuthenticationResponse.builder().authenticated(result).build())
+                .result(result)
                 .build();
-            }
+    }
+
+    @PostMapping("/introspect")
+    ApiResponse<IntrospectResponse> authenticated(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
+        var result =  authenticationService.introspectResponse(request);
+        return ApiResponse.<IntrospectResponse>builder()
+                .result(result)
+                .build();
+    }
+
 }
