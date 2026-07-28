@@ -2,7 +2,10 @@ package com.example.identify_service.mapper;
 
 import com.example.identify_service.dto.request.UserCreationRequest;
 import com.example.identify_service.dto.request.UserUpdateRequest;
+import com.example.identify_service.dto.response.RoleResponse;
 import com.example.identify_service.dto.response.UserResponse;
+import com.example.identify_service.entity.Permission;
+import com.example.identify_service.entity.Role;
 import com.example.identify_service.entity.User;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -41,15 +44,12 @@ public class UserMapperImpl implements UserMapper {
 
         UserResponse.UserResponseBuilder userResponse = UserResponse.builder();
 
-        userResponse.lastName( user.getFirstName() );
         userResponse.id( user.getId() );
         userResponse.username( user.getUsername() );
         userResponse.firstName( user.getFirstName() );
+        userResponse.lastName( user.getLastName() );
         userResponse.dob( user.getDob() );
-        Set<String> set = user.getRoles();
-        if ( set != null ) {
-            userResponse.roles( new LinkedHashSet<String>( set ) );
-        }
+        userResponse.roles( roleSetToRoleResponseSet( user.getRoles() ) );
 
         return userResponse.build();
     }
@@ -64,5 +64,35 @@ public class UserMapperImpl implements UserMapper {
         user.setFirstName( request.getFirstName() );
         user.setLastName( request.getLastName() );
         user.setDob( request.getDob() );
+    }
+
+    protected RoleResponse roleToRoleResponse(Role role) {
+        if ( role == null ) {
+            return null;
+        }
+
+        RoleResponse.RoleResponseBuilder roleResponse = RoleResponse.builder();
+
+        roleResponse.name( role.getName() );
+        roleResponse.description( role.getDescription() );
+        Set<Permission> set = role.getPermissions();
+        if ( set != null ) {
+            roleResponse.permissions( new LinkedHashSet<Permission>( set ) );
+        }
+
+        return roleResponse.build();
+    }
+
+    protected Set<RoleResponse> roleSetToRoleResponseSet(Set<Role> set) {
+        if ( set == null ) {
+            return null;
+        }
+
+        Set<RoleResponse> set1 = LinkedHashSet.newLinkedHashSet( set.size() );
+        for ( Role role : set ) {
+            set1.add( roleToRoleResponse( role ) );
+        }
+
+        return set1;
     }
 }

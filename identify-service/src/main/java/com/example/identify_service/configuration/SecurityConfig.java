@@ -35,7 +35,8 @@ public class SecurityConfig {
             {
                     "/users",
                     "/auth/token",
-                    "/auth/introspect"
+                    "/auth/introspect",
+                    "/permission"
             };
 
     @Value("${jwt.signerKey}")
@@ -73,7 +74,7 @@ public class SecurityConfig {
     JwtAuthenticationConverter jwtAuthenticationConverter()
     {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
 
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
