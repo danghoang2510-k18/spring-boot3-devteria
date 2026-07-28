@@ -4,6 +4,8 @@ import com.example.identify_service.dto.request.UserCreationRequest;
 import com.example.identify_service.dto.request.UserUpdateRequest;
 import com.example.identify_service.dto.response.UserResponse;
 import com.example.identify_service.entity.User;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
@@ -20,15 +22,15 @@ public class UserMapperImpl implements UserMapper {
             return null;
         }
 
-        User user = new User();
+        User.UserBuilder user = User.builder();
 
-        user.setUsername( request.getUsername() );
-        user.setFirstName( request.getFirstName() );
-        user.setPassword( request.getPassword() );
-        user.setLastName( request.getLastName() );
-        user.setDob( request.getDob() );
+        user.username( request.getUsername() );
+        user.password( request.getPassword() );
+        user.firstName( request.getFirstName() );
+        user.lastName( request.getLastName() );
+        user.dob( request.getDob() );
 
-        return user;
+        return user.build();
     }
 
     @Override
@@ -42,9 +44,12 @@ public class UserMapperImpl implements UserMapper {
         userResponse.lastName( user.getFirstName() );
         userResponse.id( user.getId() );
         userResponse.username( user.getUsername() );
-        userResponse.password( user.getPassword() );
         userResponse.firstName( user.getFirstName() );
         userResponse.dob( user.getDob() );
+        Set<String> set = user.getRoles();
+        if ( set != null ) {
+            userResponse.roles( new LinkedHashSet<String>( set ) );
+        }
 
         return userResponse.build();
     }
@@ -55,8 +60,8 @@ public class UserMapperImpl implements UserMapper {
             return;
         }
 
-        user.setFirstName( request.getFirstName() );
         user.setPassword( request.getPassword() );
+        user.setFirstName( request.getFirstName() );
         user.setLastName( request.getLastName() );
         user.setDob( request.getDob() );
     }

@@ -10,7 +10,9 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
+@Slf4j
 public class UserController {
 
     UserService userService;
@@ -26,9 +29,9 @@ public class UserController {
 //    @Valid khai báo cho framework validation cho object này dựa trên
 //    các role đã được cấu hình trong object(ở đây là UserCreationRequest)
     @PostMapping
-    ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request)
+    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request)
     {
-        ApiResponse<User> apiResponse = new ApiResponse<>();
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
 
         apiResponse.setResult(userService.createRequest(request));
         return apiResponse;
@@ -36,9 +39,23 @@ public class UserController {
     }
 
     @GetMapping
-    List<UserResponse> getUsers()
+    ApiResponse<List<UserResponse>> getUsers()
     {
-        return  userService.getUsers();
+        var authentiation = SecurityContextHolder.getContext().getAuthentication();
+
+        log.info("Username :" + authentiation.getName());
+        authentiation.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
+        return ApiResponse.<List<UserResponse>>builder()
+                .result(userService.getUsers())
+                .build();
+    }
+
+    @GetMapping("/myInfo")
+    ApiResponse<UserResponse> getUser()
+    {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getMyInfo())
+                .build();
     }
 
     @GetMapping("/{userId}")
