@@ -4,6 +4,7 @@ package com.example.identify_service.controller;
 import com.example.identify_service.dto.request.ApiResponse;
 import com.example.identify_service.dto.request.AuthenticationRequest;
 import com.example.identify_service.dto.request.IntrospectRequest;
+import com.example.identify_service.dto.request.LogoutRequest;
 import com.example.identify_service.dto.response.AuthenticationResponse;
 import com.example.identify_service.dto.response.IntrospectResponse;
 import com.example.identify_service.service.AuthenticationService;
@@ -27,13 +28,21 @@ import java.text.ParseException;
 public class AuthenticationController {
     AuthenticationService authenticationService;
 
-//    Xem lại --> lú
-    @PostMapping("/token")
+
+    @PostMapping("/log-in")
     ApiResponse<AuthenticationResponse> handleLogin(@RequestBody  AuthenticationRequest request)
     {
         var result =  authenticationService.authenticate(request);
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(result)
+                .build();
+    }
+
+
+    @PostMapping("/log-out")
+    ApiResponse<Void> handleLogout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+        authenticationService.logout(request);
+        return ApiResponse.<Void>builder()
                 .build();
     }
 
@@ -44,5 +53,8 @@ public class AuthenticationController {
                 .result(result)
                 .build();
     }
+
+
+
 
 }

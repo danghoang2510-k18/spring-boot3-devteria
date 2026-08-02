@@ -34,13 +34,18 @@ public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINT =
             {
                     "/users",
-                    "/auth/token",
+                    "/auth/log-in",
+                    "/auth/log-out",
                     "/auth/introspect",
                     "/permission"
             };
 
     @Value("${jwt.signerKey}")
     private String signerKey;
+
+
+    @Autowired
+    private CustomJwtDecoder customJwtDecoder;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -55,7 +60,7 @@ public class SecurityConfig {
 //        Xử lý khi có request là 1 token gửi về
         httpSecurity.oauth2ResourceServer(
                 oauth2 ->
-                     oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                     oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
                              .jwtAuthenticationConverter(jwtAuthenticationConverter())
 
 
@@ -63,6 +68,7 @@ public class SecurityConfig {
 
                              .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
+
 
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
@@ -81,17 +87,7 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 
-    @Bean
-    JwtDecoder jwtDecoder()
-    {
 
-        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
-
-    };
 
 
 
