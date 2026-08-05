@@ -17,7 +17,7 @@ public class UserCreationRequest {
 
 //    Còn nhiều annotation khác ==> cần tìm hiểu
 //    Có thể custom validation ==>tìm hiểu
-    @Size(min = 3 , message = "USERNAME_INVALID")
+    @Size(min = 4 , message = "USERNAME_INVALID")
     String username;
 
     @Size(min = 6 , message = "PASSWORD_INVALID")

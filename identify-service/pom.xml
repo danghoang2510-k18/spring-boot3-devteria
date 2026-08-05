@@ -34,6 +34,20 @@
 		<maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
 
 	</properties>
+
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>2.0.5</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -54,6 +68,11 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>com.mysql</groupId>
@@ -81,13 +100,32 @@
 <!--			<artifactId>spring-boot-starter-webmvc-test</artifactId>-->
 <!--			<scope>test</scope>-->
 <!--		</dependency>-->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>2.3.232</version>
+			<scope>test</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-crypto</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-mysql</artifactId>
+			<scope>test</scope>
+		</dependency>
 
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-junit-jupiter</artifactId>
+			<version>2.0.5</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+
+
 
 	<build>
 		<plugins>
@@ -136,7 +174,48 @@
 			</compilerArgs>
 		</configuration>
 	</plugin>
+
+
+				<!-- Plugin chạy Unit Test (Bắt buộc phải có) -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.2.5</version>
+				</plugin>
+
+				<!-- Plugin cấu hình JaCoCo -->
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>0.8.15</version> <!-- Bạn có thể cập nhật phiên bản mới nhất -->
+					<executions>
+						<!-- Bước 1: Khởi tạo JaCoCo Agent để theo dõi khi chạy test -->
+						<execution>
+							<id>prepare-agent</id>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+						</execution>
+						<!-- Bước 2: Tạo báo cáo sau khi quá trình test kết thúc -->
+						<execution>
+							<id>report</id>
+							<phase>test</phase> <!-- Chạy ngay sau khi lệnh mvn test hoàn thành -->
+							<goals>
+								<goal>report</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<excludes>
+							<exclude>com/example/identify_service/mapper/**</exclude>
+							<exclude>com/example/identify_service/configuration/**</exclude>
+						</excludes>
+
+					</configuration>
+				</plugin>
+
 		</plugins>
+
 	</build>
 
 </project>

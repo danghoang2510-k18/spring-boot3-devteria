@@ -31,6 +31,7 @@ public class UserController {
     @PostMapping
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request)
     {
+        log.info("Controller : Create user");
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
 
         apiResponse.setResult(userService.createRequest(request));
@@ -65,7 +66,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    UserResponse updateUser(@PathVariable("userId") String userId,@RequestBody UserUpdateRequest request)
+    UserResponse updateUser(@PathVariable("userId") String userId,@RequestBody @Valid UserUpdateRequest request)
     {
         return userService.updateUser(userId, request);
     }

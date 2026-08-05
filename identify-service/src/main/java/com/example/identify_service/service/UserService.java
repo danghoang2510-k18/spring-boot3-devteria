@@ -39,7 +39,7 @@ public class UserService {
 
     public UserResponse createRequest(UserCreationRequest request)
     {
-
+        log.info("Service : Create User");
 
         if(userRepository.existsByUsername(request.getUsername()))
            throw new AppException(ErrorCode.USER_EXISTED);
@@ -61,7 +61,7 @@ public class UserService {
     public UserResponse updateUser(String userId,UserUpdateRequest request)
     {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         userMapper.updateUser(user,request);
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -77,7 +77,7 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-    @PreAuthorize("hasAuthority('CREATE_DATA')")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers()
     {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
